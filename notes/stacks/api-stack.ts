@@ -11,11 +11,13 @@ export function ApiStack({ stack, app }) {
       function: {
         permissions: [table],
         environment: {
-          TABLE_NAME: table.tableName
+          TABLE_NAME: table.tableName,
+          STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || ''
         }
       }
     },
     routes: {
+      "POST /dues": "functions/dues-stripe-trxn.main",
       'GET /notes': 'functions/notes-search.main',
       'POST /notes': 'functions/notes-create.main',
       'DELETE /notes/{noteId}': 'functions/notes-delete.main',
