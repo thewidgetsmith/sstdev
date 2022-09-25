@@ -1,0 +1,14 @@
+version: "3"
+services:
+  grafana:
+    env_file: ./.env.local
+    image: grafana/grafana-oss
+    ports:
+      - 9000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana
+      # - $PWD/dashboards:/etc/grafana/dashboards
+      # - $PWD/provisioning:/etc/grafana/provisioning
+
+volumes:
+  grafana-data:

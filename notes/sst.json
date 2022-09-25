@@ -1,5 +1,5 @@
 {
-  "name": "notes",
-  "region": "us-west-1",
+  "name": "ubr-notes",
+  "region": "us-west-2",
   "main": "stacks/index.ts"
 }
