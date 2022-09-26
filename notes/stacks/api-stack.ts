@@ -1,38 +1,40 @@
-import { Api, use } from '@serverless-stack/resources'
-import { StorageStack } from './storage-stack'
+import { Api, use } from "@serverless-stack/resources";
+import { StorageStack } from "./storage-stack";
 
 export function ApiStack({ stack, app }) {
-  const { table } = use(StorageStack)
+  const { table } = use(StorageStack);
+  const customDomain = app.stage === "prod" ? "api.emra.me" : undefined;
 
   // Create the API
-  const api = new Api(stack, 'Api', {
+  const api = new Api(stack, "Api", {
+    customDomain,
     defaults: {
-      authorizer: 'iam',
+      authorizer: "iam",
       function: {
         permissions: [table],
         environment: {
           TABLE_NAME: table.tableName,
-          STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || ''
-        }
-      }
+          STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || "",
+        },
+      },
     },
     routes: {
       "POST /dues": "functions/dues-stripe-trxn.main",
-      'GET /notes': 'functions/notes-search.main',
-      'POST /notes': 'functions/notes-create.main',
-      'DELETE /notes/{noteId}': 'functions/notes-delete.main',
-      'GET /notes/{noteId}': 'functions/notes-select.main',
-      'PUT /notes/{noteId}': 'functions/notes-update.main'
-    }
-  })
+      "GET /notes": "functions/notes-search.main",
+      "POST /notes": "functions/notes-create.main",
+      "DELETE /notes/{noteId}": "functions/notes-delete.main",
+      "GET /notes/{noteId}": "functions/notes-select.main",
+      "PUT /notes/{noteId}": "functions/notes-update.main",
+    },
+  });
 
   // Show the API endpoint in the output
   stack.addOutputs({
-    ApiEndpoint: api.url
-  })
+    ApiEndpoint: api.customDomainUrl || api.url,
+  });
 
   // Return the API resource
   return {
-    api
-  }
+    api,
+  };
 }

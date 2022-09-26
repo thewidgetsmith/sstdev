@@ -8,8 +8,17 @@ export function FrontendStack({ stack, app }) {
   const { auth } = use(AuthStack);
   const { bucket } = use(StorageStack);
 
+  const customDomain =
+    app.stage === "prod"
+      ? {
+          domainName: "emra.me",
+          domainAlias: "www.emra.me",
+        }
+      : undefined;
+
   // Define our React app
   const site = new ReactStaticSite(stack, "ReactSite", {
+    customDomain,
     path: "frontend",
     // Pass in our environment variables
     environment: {
@@ -18,12 +27,12 @@ export function FrontendStack({ stack, app }) {
       REACT_APP_BUCKET: bucket.bucketName,
       REACT_APP_USER_POOL_ID: auth.userPoolId,
       REACT_APP_IDENTITY_POOL_ID: auth.cognitoIdentityPoolId,
-      REACT_APP_USER_POOL_CLIENT_ID: auth.userPoolClientId
-    }
-  })
+      REACT_APP_USER_POOL_CLIENT_ID: auth.userPoolClientId,
+    },
+  });
 
   // Show the url in the output
   stack.addOutputs({
-    SiteUrl: site.url
-  })
+    SiteUrl: site.customDomainUrl || site.url,
+  });
 }
